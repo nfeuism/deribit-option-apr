@@ -1,0 +1,16 @@
+const assert=require('node:assert/strict');const C=require('../core.js');
+const now=Date.UTC(2026,9,9,8),base={name:'BTC-30OCT26-62000-P',quantity:'0.1',price:'0.0005',unit:'BTC',index:'82558.51',fee:'0.00000625'};
+const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-9,`${a} != ${b}`);
+let r=C.calculate(base,now);near(r.days,21);near(r.premium,0.00005);near(r.capital,6200/82558.51);near(r.apr,0.00005*82558.51/6200*365/21*100);near(r.netApr,r.apr*.875);
+const double=C.calculate({...base,quantity:'.2',fee:'.0000125'},now);near(double.apr,r.apr);near(double.premium,r.premium*2);
+near(C.calculate({...base,price:'.001',fee:'.0000125'},now).apr,r.apr*2);
+near(C.calculate({...base,unit:'USD',price:String(.0005*82558.51)},now).apr,r.apr);
+near(C.calculate({...base,name:'BTC-30OCT26-100000-C'},now).apr,.0005*365/21*100);
+near(C.calculate({...base,name:'BTC_USDC-30OCT26-76000-P',unit:'USDC',price:'460',quantity:'.04',fee:'0'},now).apr,460/76000*365/21*100);
+near(C.calculate({...base,name:'BTC_USDC-30OCT26-100000-C',unit:'USDC',price:'460'},now).apr,460/82558.51*365/21*100);
+near(C.calculate({...base,capital:'1'},now).apr,.00005*365/21*100);
+assert.equal(C.calculate({...base,fee:''},now).netApr,null);
+assert.ok(C.calculate({...base,fee:'.001'},now).netApr<0);
+for(const patch of [{quantity:''},{quantity:'0'},{price:'0'},{index:'0'},{unit:'IV (%)'},{capital:'0'},{fee:'-1'},{name:'BTC-31FEB26-62000-P'},{name:'ETH-30OCT26-62000-P'}])assert.throws(()=>C.calculate({...base,...patch},now));
+assert.throws(()=>C.calculate(base,Date.UTC(2026,9,30,8)));
+console.log('20 calculation/validation assertions passed');console.log(JSON.stringify({grossAPR:r.apr,netAPR:r.netApr,premium:r.premium,capital:r.capital}));

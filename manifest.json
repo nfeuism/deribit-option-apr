@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "期权权利金年化 · Deribit",
+  "version": "1.0.0",
+  "description": "在期权下单框显示卖出权利金年化。仅本地计算，不下单、不联网、不读取账户。",
+  "content_scripts": [{
+    "matches": ["https://*.tibired.com/*", "https://*.deribit.com/*"],
+    "js": ["core.js", "adapter.js", "content.js"],
+    "run_at": "document_idle"
+  }]
+}
