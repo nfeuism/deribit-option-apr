@@ -1,6 +1,10 @@
 (function(root){
 'use strict';
 const visible=e=>!!e&&e.getClientRects().length>0&&getComputedStyle(e).visibility!=='hidden';
+function parseSide(value){
+  const side=String(value||'').trim().replace(/\s+/g,'');
+  return /^(看涨(?:期权)?|Call)$/i.test(side)?'C':/^(看跌(?:期权)?|Put)$/i.test(side)?'P':null;
+}
 function read(dialog,url){
   const text=dialog.innerText;
   const combos=[...dialog.querySelectorAll('[role="combobox"]')].map(e=>e.innerText.trim());
@@ -8,7 +12,7 @@ function read(dialog,url){
   const start=combos.indexOf(base);
   const strike=combos[start+1]?.replace(/,/g,'');
   const side=combos[start+2];
-  const type=/^(看涨|Call)$/i.test(side)?'C':/^(看跌|Put)$/i.test(side)?'P':null;
+  const type=parseSide(side);
   const name=base&&/^\d+(\.\d+)?$/.test(strike)&&type?`${base}-${strike}-${type}`:null;
   if(!name)throw Error('未能确认下单框合约，请使用手动模式');
   const path=decodeURIComponent(new URL(url).pathname).split('/').pop();
@@ -27,5 +31,6 @@ function read(dialog,url){
   const feeMatch=text.match(/(?:^|\n)\s*(?:Fee|手续费)\s*\n\s*([\d,]+(?:\.\d+)?)(?:\s|$)/i);
   return {name,quantity:amount.value,price:price.value,unit,index:indexMatch?.[1]||'',fee:feeMatch?.[1]||'',capital:'',anchor:amount.closest('.MuiFormControl-root')||amount.parentElement.parentElement};
 }
-root.DeribitAPRAdapter={read,visible};
+root.DeribitAPRAdapter={read,visible,parseSide};
+if(typeof module!=='undefined')module.exports=root.DeribitAPRAdapter;
 })(globalThis);
