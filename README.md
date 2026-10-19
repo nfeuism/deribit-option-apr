@@ -11,7 +11,7 @@
 
 
 ## 使用
-- [展示截屏](https://github.com/nfeuism/deribit-option-apr/blob/main/%E6%88%AA%E5%B1%8F2026-10-19%2015.47.59.png)
+- ![展示截屏](https://github.com/nfeuism/deribit-option-apr/blob/main/%E6%88%AA%E5%B1%8F2026-10-19%2015.47.59.png)
 - 未扣费年化：权利金 / 对应本金 × 365 / 剩余天数。
 - 扣开仓费年化：（权利金 − 开仓总费用）/ 对应本金 × 365 / 剩余天数。
 - 费用优先读取下单框 Fee，仅为页面估算；未读取到时不假设为 0，不显示扣费年化。
